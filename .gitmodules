@@ -1,0 +1,6 @@
+[submodule "alpaca_eval"]
+	path = alpaca_eval
+	url = https://github.com/tatsu-lab/alpaca_eval.git
+[submodule "training/LlamaFactory"]
+	path = training/LlamaFactory
+	url = https://github.com/hiyouga/LlamaFactory.git

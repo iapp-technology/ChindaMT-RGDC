@@ -1,0 +1,58 @@
+### Phase 1B pre-experience freeze-tune, Qwen3.5-4B (the paper's IFD scorer).
+### Usage: llamafactory-cli train config/training/phase1b_pre_experience_qwen35_4b.yaml
+### Single GPU, no DeepSpeed. Top four transformer blocks trainable (kept in float32).
+
+### Model
+model_name_or_path: Qwen/Qwen3.5-4B
+trust_remote_code: true
+
+### Method
+stage: sft
+do_train: true
+finetuning_type: freeze
+freeze_trainable_layers: 4
+freeze_trainable_modules: all
+freeze_extra_modules: null
+use_llama_pro: false
+freeze_vision_tower: true
+freeze_multi_modal_projector: true
+freeze_language_model: false
+
+### Dataset (Phase 1A output, registered as rgdc_pre_experience in config/training/dataset_info.json)
+dataset_dir: data
+dataset: rgdc_pre_experience
+template: qwen3_5
+cutoff_len: 1024
+max_samples: 10000000
+packing: true
+neat_packing: false
+preprocessing_num_workers: 16
+val_size: 0.003
+
+### Output
+output_dir: saves/Qwen3.5-4B/freeze/pre_experience
+overwrite_output_dir: false
+logging_steps: 100
+save_steps: 2000
+save_total_limit: 5
+report_to: tensorboard
+
+### Training
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 16
+learning_rate: 2.0e-5
+num_train_epochs: 1.0
+lr_scheduler_type: inverse_sqrt
+warmup_ratio: 0.01
+weight_decay: 0.0
+max_grad_norm: 1.0
+optim: adamw_torch
+bf16: true
+gradient_checkpointing: false
+seed: 42
+
+### Eval
+do_eval: true
+eval_strategy: steps
+eval_steps: 2000
+per_device_eval_batch_size: 4

@@ -1,0 +1,19 @@
+# Evaluation template: judge a target model against reference models on CoreEval and BroadEval.
+# Suite files live at data/eval/<suite>/<split>.jsonl; docs/evaluation.md#setup downloads them.
+target_model: config/evaluation/models/chindamt_4b.yaml
+
+suites:
+  coreeval:
+    path: data/eval/coreeval
+    splits: [plain, constrained]
+  broadeval:
+    path: data/eval/broadeval
+    splits: [plain, constrained]
+
+judge_config: config/evaluation/judge_config.yaml
+
+predictions_dir: predictions
+output_dir: output
+
+reference_models:
+  - config/evaluation/models/qwen35_4b.yaml

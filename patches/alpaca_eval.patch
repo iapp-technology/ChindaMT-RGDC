@@ -1,0 +1,55 @@
+diff --git a/src/alpaca_eval/annotators/pairwise_evaluator.py b/src/alpaca_eval/annotators/pairwise_evaluator.py
+index 817f5fe..62e0195 100644
+--- a/src/alpaca_eval/annotators/pairwise_evaluator.py
++++ b/src/alpaca_eval/annotators/pairwise_evaluator.py
+@@ -304,9 +304,13 @@ class PairwiseAnnotatorLocal(BaseAnnotator):
+ 
+         # 2. deals with equality
+         idcs_is_same_outputs = df_to_annotate["output_1"] == df_to_annotate["output_2"]
+-        df_to_annotate.loc[idcs_is_same_outputs, self.annotation_key] = 1.5
++        if self.annotation_key in df_to_annotate.columns:
++            df_to_annotate[self.annotation_key] = df_to_annotate[self.annotation_key].astype(float)
++        if idcs_is_same_outputs.any():
++            df_to_annotate.loc[idcs_is_same_outputs, self.annotation_key] = 1.5
+         # for backward compatibility 0 used to mean same output => replace with 1.5
+-        df_to_annotate[self.annotation_key] = df_to_annotate[self.annotation_key].replace({0: 1.5})
++        if self.annotation_key in df_to_annotate.columns:
++            df_to_annotate[self.annotation_key] = df_to_annotate[self.annotation_key].replace({0: 1.5})
+ 
+         return df_to_annotate
+ 
+diff --git a/src/alpaca_eval/decoders/openai.py b/src/alpaca_eval/decoders/openai.py
+index c397523..34ec955 100644
+--- a/src/alpaca_eval/decoders/openai.py
++++ b/src/alpaca_eval/decoders/openai.py
+@@ -181,7 +181,7 @@ def openai_completions(
+ def _openai_completion_helper(
+     args: tuple[Sequence[str], int],
+     is_chat: bool,
+-    sleep_time: int = 2,
++    sleep_time: int = 10,
+     top_p: Optional[float] = 1.0,
+     temperature: Optional[float] = 0.7,
+     client_config_path: utils.AnyPath = constants.OPENAI_CLIENT_CONFIG_PATH,  # see `client_configs/README.md`
+@@ -191,7 +191,7 @@ def _openai_completion_helper(
+     openai_api_base: Optional[str] = os.getenv("OPENAI_API_BASE") if os.getenv("OPENAI_API_BASE") else openai.base_url,
+     ############################
+     client_kwargs: Optional[dict[str, Any]] = None,
+-    n_retries: Optional[int] = 10,
++    n_retries: Optional[int] = 30,
+     **kwargs,
+ ):
+     client_kwargs = client_kwargs or dict()
+@@ -277,8 +277,11 @@ def _openai_completion_helper(
+                 return choices
+ 
+             else:
+-                if "rate " in str(e).lower():
++                s = str(e).lower()
++                if "rate " in s:
+                     logging.warning(f"Hit request rate limit; retrying...")
++                elif any(x in s for x in ["429", "504", "503", "502", "backend timeout", "overloaded", "unhealthy", "connection", "timeout", "capacity"]):
++                    logging.warning(f"Transient server error, retrying: {str(e)[:120]}")
+                 else:
+                     logging.exception("Unknown error:")
+                     raise e

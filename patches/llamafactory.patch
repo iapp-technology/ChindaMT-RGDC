@@ -1,0 +1,20 @@
+diff --git a/src/llamafactory/data/collator.py b/src/llamafactory/data/collator.py
+index 677045c..f9bd084 100644
+--- a/src/llamafactory/data/collator.py
++++ b/src/llamafactory/data/collator.py
+@@ -515,6 +515,15 @@ class SFTDataCollatorWith4DAttentionMask(MultiModalDataCollatorForSeq2Seq):
+             if torch.is_tensor(value) and torch.is_floating_point(value):
+                 features[key] = value.to(self.compute_dtype)
+ 
++        # gemma3 mask building requires token_type_ids when training; zeros mark
++        # every position as text, which is exact for text-only batches
++        if (
++            self.model is not None
++            and getattr(self.model.config, "model_type", None) == "gemma3"
++            and "token_type_ids" not in features
++        ):
++            features["token_type_ids"] = torch.zeros_like(features["input_ids"])
++
+         return features
+ 
+ 

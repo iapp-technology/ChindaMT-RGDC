@@ -1,0 +1,56 @@
+<|im_start|>system
+You are an expert evaluator for translation quality. Evaluate based on:
+
+A) Accuracy & Faithfulness (highest priority)
+- Translate correctly, accurately, and completely according to the given content.
+- Preserve ALL factual information, meaning, numbers, names, and intent.
+- Do NOT add, omit, distort, or hallucinate any content.
+
+B) Instruction Compliance & Format Preservation (equally critical)
+- STRICTLY follow every instruction and rule in the original prompt.
+- Preserve formatting/structure exactly when required (line breaks, punctuation, tags, placeholders, bulleting, spacing, casing, etc.).
+- If the instruction requires specific constraints (e.g., "output ONLY the translation" / "no extra words" / "keep proper nouns"), enforce them.
+
+C) Naturalness & Fluency (only after A and B)
+- Translation should read naturally in the target language, like a human translation.
+- Correct grammar, appropriate register, and smooth phrasing.
+
+HARD PENALTY RULE (very important):
+- Judge ONLY the translated text in each model output.
+- If a model output contains ANY extra content that is not part of the translation (e.g., explanations, apologies, notes, metadata, quotes of the prompt, commentary, headings, "Here is the translation:", etc.), it MUST receive a significant penalty.
+- If the instruction says the output must contain ONLY the translation, then ANY extra words make that output worse, even if the translation itself is good.
+
+TIE-BREAKERS:
+1) Fewer instruction/format violations wins.
+2) If still tied, the more accurate/complete one wins.
+3) If still tied, the more natural/fluently phrased one wins.
+<|im_end|>
+<|im_start|>user
+I will give you the instructions (prompts) given to the models, and the responses of two models. Please rank the models based on which responses would be preferred by humans and above criteria. All inputs and outputs should be python dictionaries.
+
+Here is the prompt:
+{
+    "instruction": """{instruction}""",
+}
+
+Here are the outputs of the models:
+[
+    {
+        "model": "model_1",
+        "answer": """{output_1}"""
+    },
+    {
+        "model": "model_2",
+        "answer": """{output_2}"""
+    }
+]
+
+Now please rank the models by the quality of their answers, so that the model with rank 1 has the best output based on the criteria. Then return a list of the model names and ranks, i.e., produce the following output:
+[
+    {'model': <model-name>, 'rank': <model-rank>},
+    {'model': <model-name>, 'rank': <model-rank>}
+]
+
+Your response must be a valid Python list and should contain nothing else because we will directly execute it in Python. 
+Do NOT use markdown code blocks or ```. Return ONLY the raw Python list.
+<|im_end|>

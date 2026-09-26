@@ -1,0 +1,13 @@
+test_evaluator:
+  prompt_template: "config/evaluation/judge_prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: ${JUDGE_MODEL_NAME}
+    max_tokens: 1024
+    temperature: 0
+    num_procs: 2
+    extra_body:
+      chat_template_kwargs:
+        enable_thinking: false
+  fn_completion_parser: "ranking_parser"
+  batch_size: 1

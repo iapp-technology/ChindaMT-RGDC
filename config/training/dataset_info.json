@@ -1,0 +1,30 @@
+{
+  "chindamt_grounded": {
+    "file_name": "data/grounded/grounded.jsonl",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "rgdc_output": {
+    "file_name": "data/rgdc_qwen35/phase2/augmented_sft_dataset_with_rules.jsonl",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "rgdc_pre_experience": {
+    "file_name": "data/rgdc_qwen35/pre_experience_concat.json",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  }
+}

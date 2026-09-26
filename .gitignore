@@ -1,0 +1,24 @@
+# Data, checkpoints, and run outputs
+data/
+saves/
+predictions/
+output/
+logs/
+*.jsonl
+*.pt
+*.bin
+*.safetensors
+
+# Caches
+cache/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+llamaboard_cache/
+
+# Archives
+*.tar.gz
+*.zip
+
+# Credentials
+.env

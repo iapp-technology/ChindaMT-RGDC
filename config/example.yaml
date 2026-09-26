@@ -1,0 +1,62 @@
+# Template for a new pipeline run
+# Copy this file and fill in the values for your set.
+name: my_run
+
+# Phase 1A: Pre-Experience Sampling
+phase1a:
+  source_data_dir: data/source/pool
+  template_filter: mid_zero-shot
+  base_model: your-model/name
+  max_samples_per_corpus: 20000
+  kmeans_clusters: 100
+  samples_per_cluster: 10
+  low_th: 25
+  up_th: 75
+  max_length: 1024
+  seed: 42
+  output_dir: data/my_run/pre_experience
+  output_concat: data/my_run/pre_experience_concat.json
+
+# Phase 1B: Pre-Experienced Model (trained externally in LLaMA-Factory)
+phase1b:
+  base_model: your-model/name
+  method: full
+  epochs: 1
+  learning_rate: 2.0e-5
+  eval_loss: ~
+  trained_model_path: /path/to/phase1b/checkpoint
+
+# Phase 1C: IFD Cherry Selection
+phase1c:
+  source_data_dir: data/source/pool
+  template_filter: mid_zero-shot
+  pre_exp_model: /path/to/phase1b/checkpoint
+  max_length: 1024
+  batch_size: 128
+  sample_rate: 0.10
+  prompt: alpaca
+  output_dir: data/my_run/cherry
+  output_concat: data/my_run/cherry_concat.json
+
+# Phase 2: Constraint Augmentation
+phase2:
+  input_file: data/my_run/cherry_concat.json
+  output_dir: data/my_run/phase2
+  llm_model: Qwen/Qwen3-30B-A3B-Instruct-2507
+  api_base_url: https://<your-vllm-endpoint>
+  api_key: <your-api-key>
+  pre_computed_constraints: ""
+  pre_computed_eval_questions: ""
+  temperature_constraint_gen: 0.7
+  temperature_eval_ques_gen: 0.0
+  temperature_inference: 0.7
+  temperature_evaluation: 0.0
+  min_sample_constraints: 1
+  max_sample_constraints: 3
+  seed: 42
+  filter_mode: all_pass
+  include_failed: true
+  max_concurrent: 20
+  batch_size: 20
+  delay: 0.0
+  max_retries: 3
